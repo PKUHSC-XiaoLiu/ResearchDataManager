@@ -1,98 +1,291 @@
-# ResearchData Manager v0.1.0
+# ResearchData Manager
 
-ResearchData Manager是一个Windows本地小工具，用于管理`D:\ResearchData`中的项目、实验和原始数据。程序基于Windows PowerShell和WinForms，不需要安装R、Python或其他运行环境。
+> A lightweight, local-first Windows application for structured, traceable, and safer research data management.
 
-## 启动
+ResearchData Manager helps individual researchers organize projects, create standardized experiment packages, import raw data with integrity verification, maintain independent backups, and track the status of each experiment. It is built with Windows PowerShell and WinForms and does not require R, Python, or a database.
 
-1. 将整个`ResearchDataManager_v0.1.0`文件夹解压到本地。
-2. 双击`Start-ResearchDataManager.cmd`。
-3. 第一次启动时，程序默认使用`D:\ResearchData`；如果目录不存在，会询问是否创建。
+**Current release:** v0.1.0 (early preview)  
+**Platform:** Windows 10/11  
+**Interface language:** Simplified Chinese
 
-建议把整个程序文件夹长期放到：
+## Why this project exists
 
-```text
-D:\ResearchData\04_Automation\ResearchDataManager\
+Experimental files are often scattered across instrument computers, USB drives, download folders, and manually created project directories. This makes it difficult to answer basic questions later:
+
+- Which files are the original instrument outputs?
+- Which analysis was generated from which experiment?
+- Was a copied file transferred without corruption?
+- Is there an independent backup?
+- Is an experiment planned, in progress, analyzed, or archived?
+
+ResearchData Manager turns each experiment into a standardized and traceable data package while leaving scientific decisions to the researcher.
+
+## Design principles
+
+1. **One experiment, one unique experiment ID.**
+2. **One standardized folder structure for every experiment.**
+3. **Raw data are copied, verified, and never overwritten by the application.**
+4. **Important operations are recorded in human-readable CSV, JSON, and Markdown files.**
+5. **A real backup must be stored on another drive or a NAS, not elsewhere on the working drive.**
+
+## Features
+
+### Project management
+
+- Create a new project from a graphical interface.
+- Generate a standard project directory automatically.
+- Record project code, name, description, confidentiality level, status, and location.
+- Maintain a global project register.
+
+### Experiment creation
+
+- Generate a unique experiment ID such as `IDH2-20260820-qPCR-01`.
+- Create a complete experiment package with design, raw-data, processed-data, analysis, results, and notes folders.
+- Generate experiment metadata, a README, a sample sheet, a processing log, and an exception log.
+- Record assay type, objective, notebook location, groups, and replicate numbers.
+
+### Raw-data import
+
+- Import either a single file or an entire folder.
+- Classify data as `L0_Native` or `L1_Export`.
+- Calculate SHA-256 checksums before and after copying.
+- Preserve the source directory structure.
+- Store each import in a new timestamped directory.
+- Generate a checksum manifest and an import summary.
+- Optionally mark imported files as read-only.
+- Optionally create and verify an independent backup.
+
+### Validation and experiment status
+
+- Check whether required experiment files and folders are present.
+- Report recommended items such as processed data, analysis files, results, and backups.
+- Track the experiment lifecycle using standardized statuses.
+- Display project and experiment summaries on a dashboard.
+
+## What the application does not do
+
+ResearchData Manager manages files and provenance. It does not interpret scientific results or replace assay-specific analysis software. qPCR, CCK8, flow cytometry, microscopy, and sequencing data still require appropriate analysis tools.
+
+It also does not delete, move, or modify the source files selected for import.
+
+## Requirements
+
+- Windows 10 or Windows 11
+- Windows PowerShell 5.1 with WinForms support
+- Write access to the selected `ResearchData` directory
+- Optional: another physical drive or a NAS for independent backups
+
+No installation of R, Python, or third-party packages is required.
+
+## Installation
+
+1. Download the repository or the latest release.
+2. Keep these files in the same directory:
+
+   ```text
+   ResearchDataManager.ps1
+   Start-ResearchDataManager.cmd
+   README.md
+   ```
+
+3. Double-click `Start-ResearchDataManager.cmd`.
+4. At first launch, confirm or create the default working directory:
+
+   ```text
+   D:\ResearchData
+   ```
+
+5. Open **Settings** in the application to change the root directory, backup location, or operator name.
+
+If Windows blocks the downloaded PowerShell script, open PowerShell in the application directory and run:
+
+```powershell
+Unblock-File .\ResearchDataManager.ps1
 ```
 
-然后为`Start-ResearchDataManager.cmd`创建桌面快捷方式。
+Then launch the application again. The included launcher starts the script with a process-scoped execution-policy bypass; it does not change the permanent execution policy of the computer.
 
-## 功能
+## Quick start
 
-### 1. 总览
+### 1. Configure storage
 
-- 显示项目数、实验数、原始数据完成数和已分析/归档数。
-- 查看项目列表和最近实验。
-- 快速打开ResearchData根目录。
+Open the **Settings** tab and confirm:
 
-### 2. 新增项目
+- the main `ResearchData` directory;
+- the operator name;
+- an optional backup directory on another drive or a NAS.
 
-输入项目代码、文件夹名称、项目名称、说明及保密等级后，程序会：
+The application can create or repair missing base directories without modifying existing content.
 
-- 创建标准项目目录；
-- 生成`PROJECT_README.md`；
-- 更新`05_SystemRecords\Project_Register.csv`；
-- 记录操作日志。
+### 2. Create a project
 
-项目代码建议使用稳定的短代码，例如`IDH2`、`SP100`。项目文件夹可以使用`IDH2_BreastCancer`之类的名称。
+Enter a stable project code, folder name, project name, description, and confidentiality level. For example:
 
-### 3. 新建实验
+```text
+Project code: IDH2
+Folder name: IDH2_BreastCancer
+Project name: IDH2 in Breast Cancer
+```
 
-输入项目、日期、实验类型、目的、纸质记录位置、样品分组和重复数后，程序会：
+The application creates the project structure and updates `Project_Register.csv`.
 
-- 自动生成ExpID；
-- 创建标准实验数据包；
-- 生成`00_README.md`和`Experiment.json`；
-- 生成样品表、Processing Log和Exception Log；
-- 更新`Experiment_Master_Register.csv`。
+### 3. Create an experiment
 
-### 4. 原始数据入库
+Select a project and enter the assay date, assay type, objective, notebook location, experimental groups, and replicate numbers.
 
-选择实验、源文件夹或单个文件，并指定`L0_Native`或`L1_Export`后，程序会：
+The application assigns the next available experiment ID and creates the full experiment package automatically.
 
-1. 逐文件计算源SHA-256；
-2. 将文件复制到新的时间戳目录；
-3. 计算目标SHA-256并进行比较；
-4. 生成`manifest_sha256.csv`和`Import_Summary.json`；
-5. 可选将目标原始文件设置为只读；
-6. 可选复制到独立磁盘/NAS并再次校验；
-7. 写入本地导入日志和全局操作日志；
-8. 经用户确认后可标记为`RAW_COMPLETE`。
+### 4. Import raw data
 
-程序只复制源数据，不会删除、移动或覆盖源文件。若校验失败，会保留失败记录并停止。
+Select an experiment, choose a source file or folder, and classify it as:
 
-### 5. 检查与状态
+| Level | Meaning |
+|---|---|
+| `L0_Native` | Native files generated by the instrument or acquisition software |
+| `L1_Export` | Direct exports such as CSV, Excel, text, TIFF, or other non-analyzed files |
 
-- 检查README、原始数据、SHA-256清单、处理数据、分析文件、结果和独立备份。
-- 手动更新实验生命周期状态：`PLANNED`、`IN_PROGRESS`、`RAW_COMPLETE`、`PROCESSING`、`ANALYZED`或`ARCHIVED`。
+The application calculates source hashes, copies the files, recalculates destination hashes, and records the result. It can also make the imported files read-only and create a separately verified backup.
 
-### 6. 设置
+### 5. Validate and update status
 
-- 修改ResearchData根目录；
-- 配置独立备份目录；
-- 设置操作者；
-- 创建或修复缺失的基础目录；
-- 打开日志目录。
+Run the experiment-package check, review missing or recommended items, and update the experiment status when appropriate.
 
-个人设置保存在：
+| Status | Meaning |
+|---|---|
+| `PLANNED` | Experiment package created; work not yet started |
+| `IN_PROGRESS` | Experimental work is ongoing |
+| `RAW_COMPLETE` | Required raw data have been imported and confirmed |
+| `PROCESSING` | Data cleaning or analysis is ongoing |
+| `ANALYZED` | Analysis and core results are complete |
+| `ARCHIVED` | Experiment package has been closed and archived |
+
+`RAW_COMPLETE` is a researcher-confirmed status. A successful import proves that selected files were copied correctly; it cannot determine whether every scientifically required file was selected.
+
+## Generated directory structure
+
+The default root structure is:
+
+```text
+D:\ResearchData\
+├── 00_Inbox\
+├── 01_Projects\
+├── 02_SharedResources\
+├── 03_Templates\
+├── 04_Automation\
+├── 05_SystemRecords\
+├── 90_Transfer\
+└── 99_ArchiveIndex\
+```
+
+Each project contains:
+
+```text
+Project_Name\
+├── 00_Project_Admin\
+├── 01_Protocols\
+├── 02_Experiments\
+├── 03_Integrated_Analysis\
+├── 04_Figures\
+├── 05_Manuscript\
+├── 06_Presentations\
+└── 99_Archive\
+```
+
+Each experiment contains:
+
+```text
+PROJECT-YYYYMMDD-Assay-01\
+├── 00_README.md
+├── Experiment.json
+├── 01_Design\
+│   └── Sample_Sheet.csv
+├── 02_RawData\
+│   ├── L0_Native\
+│   ├── L1_Export\
+│   └── RawData_Import_Log.csv
+├── 03_ProcessedData\
+├── 04_Analysis\
+│   └── Processing_Log.csv
+├── 05_Results\
+└── 99_Notes\
+    └── Exception_Log.csv
+```
+
+## Data-integrity and safety behavior
+
+- Source data are copied, never moved or deleted.
+- Existing imports are not overwritten; each import receives a timestamped directory.
+- SHA-256 hashes are calculated for both source and destination files.
+- A failed verification stops the import and creates an `IMPORT_FAILED.json` record.
+- Optional read-only attributes help protect imported raw data from accidental editing.
+- Backup paths inside the working directory are rejected.
+- Backup paths on the same local drive as the working directory are also rejected.
+- Backup copies are verified against the original SHA-256 values.
+- No network service, cloud account, or telemetry is used by v0.1.0.
+
+> Read-only attributes and checksums reduce accidental damage but are not substitutes for access control, versioned backups, or an institutional data-management policy.
+
+## Records and configuration
+
+| File | Purpose |
+|---|---|
+| `05_SystemRecords\Project_Register.csv` | Global project register |
+| `05_SystemRecords\Experiment_Master_Register.csv` | Global experiment register and lifecycle status |
+| `04_Automation\Logs\ResearchDataManager_Log.csv` | Application operation log |
+| `Experiment.json` | Machine-readable metadata for one experiment |
+| `manifest_sha256.csv` | Per-file checksum manifest for one import |
+| `Import_Summary.json` | Source, destination, operator, size, and verification summary |
+| `RawData_Import_Log.csv` | Import history within an experiment package |
+
+User-specific settings are stored locally at:
 
 ```text
 %APPDATA%\ResearchDataManager\config.json
 ```
 
-## 安全规则
+## Privacy
 
-- 原始数据入库始终采用复制，不采用移动。
-- 每次导入进入一个新的时间戳目录，不覆盖既有导入。
-- 校验不一致时停止，失败目录不会被自动删除。
-- 备份目录不能位于ResearchData内部，也不能与工作目录位于同一磁盘。
-- 项目、实验和状态变化均写入日志。
-- `RAW_COMPLETE`仍需要你确认该次导入是否已包含所需全部原始数据。
+The current version operates entirely on the local computer and configured storage locations. It makes no network requests. File paths, operator names, experiment metadata, and operation records remain in local configuration or research directories.
 
-## 第一版的边界
+Do not upload the generated `D:\ResearchData` directory, experimental data, local configuration, or operation logs to GitHub. The GitHub repository should contain only source code, documentation, examples without sensitive data, and release files.
 
-- 大体量测序数据的复制和哈希可能耗时较长，界面会同步显示当前文件和进度。
-- 本版本负责归档和管理，不会自动解释qPCR、CCK8、流式、图像或测序数据。
-- 后续可接入已有的qPCR/CCK8分析程序、定时备份、文件搜索、项目归档和Source Data生成模块。
+## Current limitations
 
-版本：0.1.0  
-日期：2026-08-20
+- v0.1.0 is an early personal-use preview and should be tested with non-critical sample files before routine use.
+- The graphical interface is currently available only in Simplified Chinese.
+- The application is Windows-only.
+- File copying and hashing run synchronously; very large datasets may take a long time and keep the interface busy.
+- The CSV registers are intended for one user and do not provide multi-user locking.
+- The application manages generic data packages but does not perform assay-specific analysis.
+- Large sequencing datasets and long-term restore procedures have not yet been extensively validated.
+
+## Roadmap
+
+- English/Chinese interface selection
+- Integration with qPCR Analyzer and CCK8 Analyzer
+- Background transfers with pause, resume, and cancellation
+- Scheduled backup and checksum verification
+- Search, filtering, and richer project dashboards
+- Project archival and restore testing
+- Source-data and figure-traceability workflows
+- Automated tests, signed releases, and simplified installation
+
+## Contributing
+
+Bug reports and suggestions are welcome. When reporting a problem, please include:
+
+- the ResearchData Manager version;
+- the Windows and PowerShell versions;
+- the operation being performed;
+- the complete error message;
+- a minimal reproducible example using non-sensitive test files.
+
+Never include unpublished research data, participant information, credentials, or confidential file paths in a public issue.
+
+## Author
+
+Developed by **Liu Xiao**.
+
+## Disclaimer
+
+ResearchData Manager is provided as a research workflow aid. Users remain responsible for validating their data, maintaining appropriate backups, complying with institutional policies, and protecting confidential or regulated information.
