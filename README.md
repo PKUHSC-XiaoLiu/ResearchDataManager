@@ -284,7 +284,7 @@ Never include unpublished research data, participant information, credentials, o
 
 ## Author
 
-Developed by **Liu Xiao**.
+Developed by **Xiao Liu**.
 
 ## Disclaimer
 
