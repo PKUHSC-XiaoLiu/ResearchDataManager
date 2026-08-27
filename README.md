@@ -122,9 +122,9 @@ The application can create or repair missing base directories without modifying 
 Enter a stable project code, folder name, project name, description, and confidentiality level. For example:
 
 ```text
-Project code: IDH2
-Folder name: IDH2_BreastCancer
-Project name: IDH2 in Breast Cancer
+Project code: GeneX
+Folder name: GeneX_Cancer
+Project name: IDH2 in Cancer
 ```
 
 The application creates the project structure and updates `Project_Register.csv`.
@@ -262,7 +262,6 @@ Do not upload the generated `D:\ResearchData` directory, experimental data, loca
 ## Roadmap
 
 - English/Chinese interface selection
-- Integration with qPCR Analyzer and CCK8 Analyzer
 - Background transfers with pause, resume, and cancellation
 - Scheduled backup and checksum verification
 - Search, filtering, and richer project dashboards
@@ -284,7 +283,7 @@ Never include unpublished research data, participant information, credentials, o
 
 ## Author
 
-Developed by **Liu Xiao**.
+Developed by **Xiao Liu**.
 
 ## Disclaimer
 
