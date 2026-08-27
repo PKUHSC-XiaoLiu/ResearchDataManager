@@ -262,7 +262,6 @@ Do not upload the generated `D:\ResearchData` directory, experimental data, loca
 ## Roadmap
 
 - English/Chinese interface selection
-- Integration with qPCR Analyzer and CCK8 Analyzer
 - Background transfers with pause, resume, and cancellation
 - Scheduled backup and checksum verification
 - Search, filtering, and richer project dashboards
