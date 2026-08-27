@@ -288,3 +288,7 @@ Developed by **Xiao Liu**.
 ## Disclaimer
 
 ResearchData Manager is provided as a research workflow aid. Users remain responsible for validating their data, maintaining appropriate backups, complying with institutional policies, and protecting confidential or regulated information.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
