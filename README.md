@@ -122,9 +122,9 @@ The application can create or repair missing base directories without modifying 
 Enter a stable project code, folder name, project name, description, and confidentiality level. For example:
 
 ```text
-Project code: IDH2
-Folder name: IDH2_BreastCancer
-Project name: IDH2 in Breast Cancer
+Project code: ACTB
+Folder name: ACTB_BreastCancer
+Project name: ACTB in Breast Cancer
 ```
 
 The application creates the project structure and updates `Project_Register.csv`.
